@@ -1,0 +1,14 @@
+{
+  "name": "site-monitor-starter",
+  "version": "1.0.0",
+  "description": "A tiny website watchdog that alerts you on Telegram when your site goes down.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "check": "node --check monitor.mjs",
+    "monitor": "node monitor.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

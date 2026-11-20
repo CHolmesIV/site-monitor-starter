@@ -1,0 +1,53 @@
+name: site-monitor
+
+# Route A: the cloud route.
+# GitHub runs this for you on a schedule, on GitHub's own computers.
+# Your laptop can be closed and it still runs. This is the recommended route.
+#
+# The schedule below is every 15 minutes. Note: GitHub's free scheduler is
+# best-effort. It sometimes runs a few minutes late or skips under heavy load.
+# That's fine for site monitoring.
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch: {}   # lets you also run it by hand from the Actions tab
+
+# Only one run at a time; don't stack up.
+concurrency:
+  group: site-monitor
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # Remember the last status between runs (so we only alert on changes).
+      - name: Restore state
+        uses: actions/cache/restore@v4
+        with:
+          path: state.json
+          key: site-monitor-state-${{ github.run_id }}
+          restore-keys: site-monitor-state-
+
+      - name: Run the check
+        env:
+          MONITOR_URL: ${{ secrets.MONITOR_URL }}
+          MONITOR_KEYWORD: ${{ secrets.MONITOR_KEYWORD }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_IDS: ${{ secrets.TELEGRAM_CHAT_IDS }}
+        run: node monitor.mjs
+
+      # Save the (possibly updated) state for the next run.
+      - name: Save state
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: state.json
+          key: site-monitor-state-${{ github.run_id }}

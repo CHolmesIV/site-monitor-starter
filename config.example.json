@@ -1,0 +1,7 @@
+{
+  "url": "https://example.com",
+  "keyword": "Example Domain",
+  "botToken": "PASTE_FROM_BOTFATHER",
+  "chatIds": "YOUR_NUMERIC_TELEGRAM_ID",
+  "expiryWarnDays": 10
+}

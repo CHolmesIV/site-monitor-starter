@@ -1,0 +1,10 @@
+# Your real secrets and config: never commit these
+.env
+config.json
+
+# Runtime state
+state.json
+
+# Node
+node_modules/
+.DS_Store
